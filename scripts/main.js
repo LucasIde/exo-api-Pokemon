@@ -3,12 +3,15 @@
 // ==============================
 const listHTML = document.querySelector(".list");
 const printHTML = document.querySelector(".pokedex");
+const btnBefore = document.querySelectorAll(".before");
+const btnNext = document.querySelectorAll(".next");
 
 // ==============================
 // 🌍 Variables globales
 // ==============================
 
 let arrayTmp = [];
+let nbPokemon = 0;
 
 // ==============================
 // 🎊 Fonctionnalités
@@ -16,7 +19,7 @@ let arrayTmp = [];
 
 async function getPokemon(offset) {
 	try {
-		const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=20&offset=${offset}`);
+		const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=21&offset=${offset}`);
 	    const data = await response.json();
 		console.log(data.results);
 		return (data.results);
@@ -38,14 +41,11 @@ async function getSpec(link) {
 	  }
 }
 
-function createList(data) {
-	listHTML.innerHTML = '';
+async function createList(data) {
+	printHTML.innerHTML = '';
 	for (let i = 0; i < data.length; i++) {
-		const btn = document.createElement("button");
-		btn.className += `btn`;
-		btn.id = i;
-		btn.innerHTML = data[i].name
-		listHTML.append(btn);
+		const spec = await getSpec(arrayTmp[i].url)
+		createPokemon(spec, i);
 	}
 }
 
@@ -60,54 +60,70 @@ function addSimple(className, txt) {
 	return (div);
 }
 
-function addArray(){
-
+function addType(query, spec){
+	spec.types.forEach(element => {
+		const div = document.createElement("div");
+		div.className += `${element.type.name}`;
+		div.innerHTML = element.type.name;
+		query.append(div);
+	});
 }
 
-function createPokemon(spec){
-	// printHTML.innerHTML = `
-	// <div class="wrapper">
-	//     <div class="img"></div>
-	//     <div class="txt">
-	//         <div class="Name">${spec.name}</div>
-	//         <div class="Type">Type:</div>
-	//         <div class="Taille">${spec.height / 10} m</div>
-	//         <div class="Poids">${spec.weight /10} kg</div>
-	//         <div class="Stats"></div>
-	//     </div>
-	// </div>
-	// `
-	const wrapper = addSimple("wrapper", "");
-	const img = addSimple("img", "");
-	img.innerHTML = `<img src="${spec.sprites.front_default}" alt="">`;
-	wrapper.append(img);
-	const txt = addSimple("txt", "");
-	txt.append(addSimple("name", `${spec.name}`));
-	txt.append(addSimple("Taille", `${spec.height / 10} m`));
-	// append type
-	txt.append(addSimple("Poids", `${spec.weight /10} kg`));
-	// append stats
-	wrapper.append(txt);
-	printHTML.append(wrapper);
+function createPokemon(spec, id){
+	printHTML.innerHTML += `
+	<div class="wrapper">
+	    <div class="img">
+			<div class="Name">${spec.name}</div>
+			<img src="${spec.sprites.front_default}" alt="">
+			<div class="Type Type${id}"><div class="title">Type: </div></div>
+		</div>
+	    <div class="txt">
+	        <div class="Taille"><div class="title">Taille: </div>${spec.height / 10} m</div>
+	        <div class="Poids"><div class="title">Poids: </div>${spec.weight /10} kg</div>
+	        <div class="Stats"><div class="title">Stats: </div>
+				<div class="hp">hp: ${spec.stats[0].base_stat}</div>
+        		<div class="attack">attack: ${spec.stats[1].base_stat}</div>
+        		<div class="defense">defense: ${spec.stats[2].base_stat}</div>
+        		<div class="special-attack">attack: ${spec.stats[3].base_stat}</div>
+        		<div class="special-defense">defense: ${spec.stats[4].base_stat}</div>
+        		<div class="speed">speed: ${spec.stats[5].base_stat}</div>
+			</div>
+	    </div>
+	</div>
+	`
+	const type = document.querySelector(`.Type${id}`);
+	addType(type, spec)
 }
 
-async function firstInit() {
-	const data = await getPokemon(0);
+async function createSection() {
+	const data = await getPokemon(nbPokemon);
 	arrayTmp = data;
 	createList(data);
-	getSpec(data[2].url);
 }
 
 // ==============================
 // 🧲 Événements
 // ==============================
 
-firstInit()
-// data.types[0].type.name
+createSection()
 
-listHTML.addEventListener("click", async (e)=> {
-	if (e.target.matches(".btn")) {
-		const spec = await getSpec(arrayTmp[e.target.id].url)
-		createPokemon(spec);
-	}
+
+btnNext.forEach((btn) => {
+	btn.addEventListener("click", () => {
+		nbPokemon += 21;
+		if (nbPokemon > 1302) {
+			nbPokemon = 1302;
+		}
+		createSection();
+	})
+})
+
+btnBefore.forEach((btn) => {
+	btn.addEventListener("click", () => {
+		nbPokemon -= 21;
+		if (nbPokemon < 0) {
+			nbPokemon = 0;
+		}
+		createSection();
+	})
 })
