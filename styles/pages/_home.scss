@@ -37,6 +37,11 @@ body{
 	border-radius: 4px;
 }
 
+.wrapper:hover {
+	outline: solid 2px #222;
+	outline-offset: -6px;	
+}
+
 
 .title {
 		font-weight: bold;
@@ -84,6 +89,11 @@ body{
 	}
 }
 
+.nbpokemon {
+	text-align: center;
+	font-size: 1.2rem;
+}
+
     .normal{ background-color: #A8A77A;}
     .fire{ background-color: #EE8130;}
     .water{ background-color: #6390F0;}
@@ -102,3 +112,22 @@ body{
     .dark{ background-color: #705746;}
     .steel{ background-color: #B7B7CE;}
     .fairy{ background-color: #D685AA;}
+	
+    .wnormal{ background-color: #A8A77ABB;}
+    .wfire{ background-color: #EE8130BB;}
+    .wwater{ background-color: #6390F0BB;}
+    .welectric{ background-color: #F7D02CBB;}
+    .wgrass{ background-color: #7AC74CBB;}
+    .wice{ background-color: #96D9D6BB;}
+    .wfighting{ background-color: #C22E28BB;}
+    .wpoison{ background-color: #A33EA1BB;}
+    .wground{ background-color: #E2BF65BB;}
+    .wflying{ background-color: #A98FF3BB;}
+    .wpsychic{ background-color: #F95587BB;}
+    .wbug{ background-color: #A6B91ABB;}
+    .wrock{ background-color: #B6A136BB;}
+    .wghost{ background-color: #735797BB;}
+    .wdragon{ background-color: #6F35FCBB;}
+    .wdark{ background-color: #705746BB;}
+    .wsteel{ background-color: #B7B7CEBB;}
+    .wfairy{ background-color: #D685AABB;}

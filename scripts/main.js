@@ -5,21 +5,24 @@ const listHTML = document.querySelector(".list");
 const printHTML = document.querySelector(".pokedex");
 const btnBefore = document.querySelectorAll(".before");
 const btnNext = document.querySelectorAll(".next");
+const nbPokemonHTML = document.querySelectorAll(".nbpokemon");
 
 // ==============================
 // 🌍 Variables globales
 // ==============================
 
 let arrayTmp = [];
+let allPokemon = [];
 let nbPokemon = 0;
 
 // ==============================
 // 🎊 Fonctionnalités
 // ==============================
 
-async function getPokemon(offset) {
+
+async function getAllPokemon(offset) {
 	try {
-		const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=21&offset=${offset}`);
+		const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1302`);
 	    const data = await response.json();
 		console.log(data.results);
 		return (data.results);
@@ -29,11 +32,23 @@ async function getPokemon(offset) {
 	  }
 }
 
+// async function getPokemon(offset) {
+// 	try {
+// 		const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=21&offset=${offset}`);
+// 	    const data = await response.json();
+// 		console.log(data.results);
+// 		return (data.results);
+// 	}
+// 	catch (error) {
+// 		console.error('Erreur :', error);
+// 	  }
+// }
+
 async function getSpec(link) {
 	try {
 		const response = await fetch(`${link}`);
 	    const data = await response.json();
-		console.log(data);
+		// console.log(data);
 		return (data);
 	}
 	catch (error) {
@@ -41,12 +56,16 @@ async function getSpec(link) {
 	  }
 }
 
-async function createList(data) {
+async function createList() {
 	printHTML.innerHTML = '';
-	for (let i = 0; i < data.length; i++) {
+	for (let i = 0; i < arrayTmp.length; i++) {
 		const spec = await getSpec(arrayTmp[i].url)
 		createPokemon(spec, i);
 	}
+	console.log(nbPokemonHTML);
+	nbPokemonHTML.forEach(poke => {
+		poke.innerHTML = `Pokemon ${nbPokemon +1}->${nbPokemon +21} / 1302`;
+	})
 }
 
 function addSimple(className, txt) {
@@ -71,7 +90,7 @@ function addType(query, spec){
 
 function createPokemon(spec, id){
 	printHTML.innerHTML += `
-	<div class="wrapper">
+	<div class="wrapper wrapper${id}">
 	    <div class="img">
 			<div class="Name">${spec.name}</div>
 			<img src="${spec.sprites.front_default}" alt="">
@@ -92,21 +111,29 @@ function createPokemon(spec, id){
 	</div>
 	`
 	const type = document.querySelector(`.Type${id}`);
-	addType(type, spec)
+	const wtype = document.querySelector(`.wrapper${id}`);
+	addType(type, spec);
+	const tmp = spec.types[0].type.name;
+	wtype .className += ` w${tmp}`;
 }
 
 async function createSection() {
-	const data = await getPokemon(nbPokemon);
-	arrayTmp = data;
-	createList(data);
+	arrayTmp = allPokemon.slice(nbPokemon, (nbPokemon + 21));
+	console.log(arrayTmp);
+	createList();
+}
+
+async function init() {
+	allPokemon = await getAllPokemon();
+	createSection()
 }
 
 // ==============================
 // 🧲 Événements
 // ==============================
 
-createSection()
 
+init();
 
 btnNext.forEach((btn) => {
 	btn.addEventListener("click", () => {
